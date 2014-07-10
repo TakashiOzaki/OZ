@@ -62,7 +62,7 @@ class UserTest extends CakeTestCase {
     private function get_user_param_password_7_characters(){
         $param =  [
             'User' => [
-                'username' => 'test@test.co.jp',
+                'username' => 'test2@test.co.jp',
                 'password' => 'testpas',
             ],
         ];
@@ -122,7 +122,7 @@ class UserTest extends CakeTestCase {
         $save_success_result = $this->User->save($this->get_user_param_success());
         $this->User->create();
         $save_failed_result = $this->User->save($this->get_user_param_success());
-        
+                
         // 期待される結果が得られたか？
         $this->assertTrue(is_array($save_success_result) and (is_array($save_failed_result) == FALSE));
     }   
@@ -162,7 +162,7 @@ class UserTest extends CakeTestCase {
         $this->User->save($this->get_user_param_username_not_email());
         
         // 期待される結果が得られたか？
-        debug($this->User->validationErrors['username'][0]);
+//        debug($this->User->validationErrors['username'][0]);
         $this->assertTrue(is_array($this->User->validationErrors['username']) And ($this->User->validationErrors['username'][0] <> 'This field cannot be left blank'));
         
     }
@@ -176,7 +176,7 @@ class UserTest extends CakeTestCase {
         $this->User->save($this->get_user_param_success());
         
         // 期待される結果が得られたか？
-        debug($this->User->validationErrors['username'][0]);
+//        debug($this->User->validationErrors['username'][0]);
         $this->assertTrue(is_array($this->User->validationErrors['username']) And ($this->User->validationErrors['username'][0] <> 'This field cannot be left blank'));
          
     }
@@ -195,7 +195,6 @@ class UserTest extends CakeTestCase {
         $this->User->save($this->get_user_param_password_7_characters());
         
         // 期待される結果が得られたか？
-        debug($this->User->validationErrors['password'][0]);
         $this->assertTrue(is_array($this->User->validationErrors['password']) And ($this->User->validationErrors['password'][0] <> 'This field cannot be left blank'));
         
     }

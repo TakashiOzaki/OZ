@@ -16,10 +16,6 @@ class User extends AppModel {
                 'rule' => 'isUnique',
                 'message' => '既に登録されたログインIDです',
             ),
-        ),
-        'password' => array(
-            'rule' => array('minLength', 8),
-            'message' => 'パスワードには、8文字以上入力してください',
         )
     );
     
