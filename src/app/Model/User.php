@@ -16,7 +16,12 @@ class User extends AppModel {
                 'rule' => 'isUnique',
                 'message' => '既に登録されたログインIDです',
             ),
-        )
+        ),
+         'password' => array(
+                'rule' => array('minLength', '8'),
+                'message' => 'パスワードは、半角英数字で8文字以上を入力してください',
+        )            
+        
     );
     
     public function beforeSave($options = array()) {
