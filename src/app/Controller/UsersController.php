@@ -1,6 +1,8 @@
 <?php
 App::uses('AppController', 'Controller');
 /**
+ * 
+ * 
  * Users Controller
  *
  * @property User $User
@@ -9,19 +11,28 @@ App::uses('AppController', 'Controller');
  */
 class UsersController extends AppController {
 
+        public function login() {
+
+                }
+    
+    
 /**
  * Components
  *
  * @var array
  */
-	public $components = array('Paginator', 'Session');
-
+	public $components = array('Paginator', 'Session', 'Auth');
+        public function beforeFilter() {
+            parent::beforeFilter();
+            $this->Auth->allow('register','login');
+        }
 /**
  * index method
  *
  * @return void
  */
-	public function index() {
+                
+        public function index() {
 		$this->User->recursive = 0;
 		$this->set('users', $this->Paginator->paginate());
 	}
@@ -46,17 +57,26 @@ class UsersController extends AppController {
  *
  * @return void
  */
-	public function add() {
-		if ($this->request->is('post')) {
-			$this->User->create();
-			if ($this->User->save($this->request->data)) {
-				$this->Session->setFlash(__('The user has been saved.'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
-			}
-		}
-	}
+        public function register() {
+                if ($this->request->is('post')) {
+                        $this->User->create();
+                        if ($this->User->save($this->request->data)) {
+                                $this->Session->setFlash(__('The user has been saved.'));
+/*                                return $this->redirect(array('action' => 'index'));*/
+                                return $this->redirect(array('controller' => 'Mcard', 'action' => 'Mcard'));
+                         } else {
+                                $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+                         }
+                }  elseif ($this->request->is('get')){
+ 
+                        if($this->Auth->loggedIn()){
+                             return $this->redirect(array('controller' => 'Mcard', 'action' => 'Mcard'));                            
+                        }else{
+                            
+                        }
+                }
+        }
+
 
 /**
  * edit method
