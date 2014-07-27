@@ -11,21 +11,64 @@ App::uses('AppController', 'Controller');
  */
 class UsersController extends AppController {
 
-        public function login() {
-
-                }
-    
-    
-/**
+ /**
  * Components
  *
  * @var array
  */
 	public $components = array('Paginator', 'Session', 'Auth');
+        
         public function beforeFilter() {
             parent::beforeFilter();
+            
+            if (empty($_SERVER['HTTPS'])) {
+                header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+                exit;
+            }
+            
             $this->Auth->allow('register','login');
+            $this->set('user',$this->Auth->user());
         }
+    
+    //検討中　：　遷移元URLへリダイレクトする方法$_SERVER[HTTP_REFERER]
+    //　　　　　　を利用する方法でよいか？この方法だとユーザ登録後は遷移不可？
+        public function login() {
+            if ($this->request->is('post')) {
+                if ($this->Auth->login()) {
+                    //redirect先は$_SERVER[HTTP_REFERER]を参照
+                    //$this->redirect($this->Auth->redirect());
+                    
+                    // リファラーを分析して表示する。（分析方法未実装）
+                    if( $_SERVER[HTTP_REFERER] == NULL ){
+                            $this->redirect(array('controller' => 'users', 'action' => 'index'));
+                    }
+                    //検討中
+                    else if ($_SERVER[HTTP_REFERER] == "edit") {
+                            $this->redirect(array('controller' => 'users', 'action' => 'edit'));
+                    }
+                    else if( $_SERVER[HTTP_REFERER] == "display" ){
+                            $this->redirect(array('controller' => 'users', 'action' => 'index'));
+                    }                    
+                    else if( $_SERVER[HTTP_REFERER] == "exchange" ){
+                            $this->redirect(array('controller' => 'users', 'action' => 'exchange'));
+                    }
+                    else{
+                            $this->redirect(array('controller' => 'users', 'action' => 'login'));
+                    }
+
+                    
+                } else {
+                    $this->Session->setFlash(__('Invalid username or password, try again'));
+                }
+            }
+        }
+
+        public function logout() {
+            $this->redirect($this->Auth->logout());
+        }
+
+    
+
 /**
  * index method
  *

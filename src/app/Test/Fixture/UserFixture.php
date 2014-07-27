@@ -36,6 +36,27 @@ class UserFixture extends CakeTestFixture {
 			'created' => '2014-07-01 09:42:44',
 			'modified' => '2014-07-01 09:42:44'
 		),
+            		array(
+			'id' => 2,
+			'username' => 'Può essere usato',
+			'password' => 'Può essere usato',
+			'created' => '2014-07-01 10:42:44',
+			'modified' => '2014-07-01 10:42:44'
+		),
+                        array(
+			'id' => 3,
+			'username' => 'Collision check for ID',
+			'password' => 'Collision check for ID',
+			'created' => '2014-07-01 10:42:44',
+			'modified' => '2014-07-01 10:42:44'
+		),
+                        array(
+			'id' => 4,
+			'username' => 'test4@test.co.jp',
+			'password' => 'testpass',
+			'created' => '2014-07-01 10:42:44',
+			'modified' => '2014-07-01 10:42:44'
+		)
 	);
 
 }

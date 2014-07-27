@@ -81,7 +81,7 @@ class DATABASE_CONFIG {
 		'host' => 'localhost',
 		'login' => 'root',
 		'password' => '',
-		'database' => 'OZtest',
+		'database' => 'oztest',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	);

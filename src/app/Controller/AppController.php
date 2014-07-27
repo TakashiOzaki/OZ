@@ -31,4 +31,23 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+    
+    public $components = array(
+        'Session',
+        'Auth' => array(
+            'loginRedirect' => array('controller' => 'users', 'action' => 'index'),
+            'logoutRedirect' => array('controller' => 'users', 'action' => 'login')
+        )
+    );
+
+    public function beforeFilter() {
+        
+     /* Login不要な画面呼び出しは認証の例外に設定する  */
+        /*
+        $this->Auth->allow('index', 'view');
+         */
+        
+ 
+    }
+
 }
