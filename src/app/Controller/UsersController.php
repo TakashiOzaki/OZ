@@ -100,12 +100,12 @@ class UsersController extends AppController {
  *
  * @return void
  */
-        public function register() {
+ /* 以前のコードをコメントアウトしておく
+          public function register() {
                 if ($this->request->is('post')) {
                         $this->User->create();
                         if ($this->User->save($this->request->data)) {
                                 $this->Session->setFlash(__('The user has been saved.'));
-/*                                return $this->redirect(array('action' => 'index'));*/
                                 return $this->redirect(array('controller' => 'Mcard', 'action' => 'Mcard'));
                          } else {
                                 $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
@@ -119,7 +119,32 @@ class UsersController extends AppController {
                         }
                 }
         }
-
+*/
+        public function register() {
+                if ($this->request->is('post')) {
+                        $this->User->create();
+                        if ($this->User->save($this->request->data)) {
+                                $this->Session->setFlash(__('The user has been saved.'));
+                                return $this->redirect(array('controller' => 'Card', 'action' => 'card'));
+                         } else {
+                                $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+                         }
+                }  elseif ($this->request->is('get')){
+ 
+                        if($this->Auth->loggedIn()){
+/*                             return $this->redirect(array('controller' => 'Card', 'action' => 'card'));                            
+                                $this->Session->setFlash(__('The user has been saved.')); 
+                                return $this->redirect(array('action' => 'index'));
+                                return $this->redirect(array('controller' => 'Card', 'action' => 'Mcard'));
+ */
+                         } else {
+ 
+ /*                               $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+ */
+                           }
+  
+                }
+        }
 
 /**
  * edit method
