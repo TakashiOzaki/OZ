@@ -1,6 +1,22 @@
 <?php
 App::uses('UsersController', 'Controller');
 
+//比較用キーワードを定数で定義
+define("VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN",'アカウント登録画面');   //アカウント登録画面（HTML内）に含まれる文字列
+define("VERIFICATION_KEYWORD_OF_LOGINED_SCREEN",'アカウント作成＆ログイン後、名詞登録画面');  //アカウント作成＆ログイン後名詞登録画面（HTML内）に含まれる文字列
+define("VERIFICATION_KEYWORD_OF_LOGIN_SCREEN",'Please enter your username and password');  //ログイン画面（HTML内）に含まれる文字列
+define("VERIFICATION_KEYWORD_OF_LOGIN_FAILURE_SCREEN",'Invalid username or password, try again');  //ログイン失敗時に表示されるkeyword
+define("VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_ERROR",'登録できませんでした');  //ログイン失敗時に表示されるkeyword
+
+//define("VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN",'アカウント登録画面');
+//define("VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN",'アカウント登録画面');
+//define("VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN",'アカウント登録画面');
+//define("VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN",'アカウント登録画面');
+
+
+
+
+
 /**
  * UsersController Test Case
  *
@@ -11,7 +27,8 @@ class UsersControllerTest extends ControllerTestCase {
 
     public function setUp() {
         parent::setUp();
-        $UsersController = new UsersController();
+    //    未使用のため削除　2014/7/30　by katsuta
+    //    $UsersController = new UsersController();
         
 
 
@@ -26,56 +43,9 @@ class UsersControllerTest extends ControllerTestCase {
 		'app.user'
 	);
         
-    /* 検証キーワードの定義    */
-    public function CheckKeywordOfAccountRegistrationScreen() {
-        return 'アカウント登録画面';
-    }
-    public function CheckKeywordOfLoginedScreen() {
-        return '名刺登録画面';
-    }
-
-    public function CheckKeywordOfLoginScreen() {
-        return 'Please enter your username and password';
-    }
-    
-    public function CheckKeywordOfLoginFailureScreen() {
-        return 'Invalid username or password, try again';
-    }
-    
-    public function TestUserData() {
-        return $data = [
-            'User' => [
-                'username' => 'test1@test.co.jp',
-                'password' => 'testpass',
-            ],
-        ];
-    }
-    
-    public function TestUserDataforLogin($no) {
-        $data = array(
-        [   #登録済みID
-            'User' => [
-                'username' => 'test4@test.co.jp',
-                'password' => 'testpass',]
-        ],[
-            #未登録のID
-            'User' => [
-                'username' => 'test3@test.co.jp',
-                'password' => 'testpass',]
-        ],[
-            #password誤り
-            'User' => [
-                'username' => 'test4@test.co.jp',
-                'password' => 'worngtestpass',]
-        ],[
-            #IDフォーマット違反（Emailじゃない）
-            'User' => [
-                'username' => 'Collision check for ID',
-                'password' => 'Collision check for ID',]
-        ]);
-        return $data[$no];
-    }
-    
+//関数で定義していた検証用キーワード削除　2014/7/30　by katsuta
+        
+        
     //検討中　ログイン画面への遷移元URLを判定するキーワード
     public function TestDestinationScreenAfterLogin($Screen) {
         $data = array(
@@ -86,10 +56,9 @@ class UsersControllerTest extends ControllerTestCase {
         return $data[$Screen];
     }
     
-    public function CheckKeywordOfAccountRegistrationError() {
-        return '登録できませんでした';
-    }
 
+    
+//■アカウント登録機能
 //機能：直接URLを指定することでアカウント登録画面を表示する
 //テスト：/usersを指定して、Actionした場合にアカウント登録画面を表示しているか
 	public function test_Viewing_the_account_registration_screen_By_NoneAction(){
@@ -97,58 +66,81 @@ class UsersControllerTest extends ControllerTestCase {
             //$resultには、取得したhtmlが格納される(らしいです)。
             $result = $this->testAction('/users', array('return' => 'view'));
             debug($result);
-            $this->assertTextContains($this->CheckKeywordOfAccountRegistrationScreen(), $result);
+            $this->assertTextContains(VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN, $result);
 	}
+        
+//■アカウント登録機能（未完成）
 //機能：ログイン済みであれば画面は表示されない
 //テスト：
 //ログイン後、/usersを指定して、Actionした場合にアカウント登録画面を表示しないか
 //ログインには、アカウント登録機能がされていることが前提となる
 	public function test_Viewing_the_account_registration_screen_By_NoneAction_after_login(){
             
-            $result1 = $this->testAction('/users/register', array('return' => 'view'),array('data' => $this->TestUserData()));
+
+            // AuthComponent::loggedIn()で常にtrueを返すようにAuthコンポーネントのモックを生成する
+            //モックを作成した上で下記testActionを実行すれば、ログイン済みの遷移を確認できるはず
+
             $result2 = $this->testAction('/users/register', array('return' => 'view'));
             debug($result2);
-            $this->assertTextNotContains($this->CheckKeywordOfAccountRegistrationScreen(), $result2);
+            $this->assertTextNotContains(VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_SCREEN, $result2);
 	}
-
+//■アカウント登録機能
 //機能：問題がなければ、データベースにユーザーを登録する
 //テスト：★検討中
 //
 
+//■アカウント登録機能
 //機能：登録できない場合は理由を示したエラー表示を行う
 //テスト：
 //アカウント登録を失敗させ、エラーメッセージの表示を確認する
 //登録失敗には、モックを使い、saveメソッドでFalseを返却する
 	public function test_Viewing_the_account_registration_Error_Message(){
-            
+            $data = [
+                'User' => [
+                'username' => 'test1@test.co.jp',
+                'password' => 'testpass',
+            ],];
             $model = $this->getMockForModel('User'); 
             $model->expects($this->once())->method('save')->will($this->returnValue(FALSE));
-            $this->testAction('/users/register', array('return' => 'view'),array('data' => $this->TestUserData()));
+            $this->testAction('/users/register', array('return' => 'view'),array('data' => $data));
             $result = $this->testAction('/users/register', array('return' => 'view'));
             debug($result);
-            $this->assertTextNotContains($this->CheckKeywordOfAccountRegistrationError(), $result);
+            $this->assertTextNotContains(VERIFICATION_KEYWORD_OF_ACCOUNT_REGISTRATION_ERROR, $result);
 	}
+        
+//■アカウント登録機能
 //機能：登録できた場合は、同時にログインも行う
 //テスト：登録してみて、ログイン状態を確認する
 	public function test_Login_by_the_account_registration_success(){
-            
-            $result  = $this->testAction('/users/register', array('return' => 'view','data' => $this->TestUserData()));
+            $data = [
+                'User' => [
+                'username' => 'test1@test.co.jp',
+                'password' => 'testpass',
+            ],];
+            $result  = $this->testAction('/users/register', array('return' => 'view','data' => $data));
             $login  =  $this->controller->Auth->login();
             debug($result);
             debug($login);
             $this->assertTrue($login);
 	}
-//
+
+ //■アカウント登録機能
 //機能：登録できた場合は、次のページに遷移する
 //テスト：
 //アカウント登録し、ログイン済みの画面が表示されるか確認する
 	public function test_Viewing_the_logined_screen(){
-        
-            $this->testAction('/users/register', array('return' => 'view','data' => $this->TestUserData()));
+            $data = [
+            'User' => [
+                'username' => 'test1@test.co.jp',
+                'password' => 'testpass',
+            ],];
+            $this->testAction('/users/register', array('return' => 'view','data' => $data));
             $result = $this->testAction('/users/register', array('return' => 'view'));
             debug($result);
-            $this->assertTextContains($this->CheckKeywordOfLoginedScreen(), $result);
+            $this->assertTextContains(VERIFICATION_KEYWORD_OF_LOGINED_SCREEN, $result);
 	}
+        
+//■ログイン機能
 //機能：直接URLを指定することでログイン画面を表示する
 //テスト：
 //login画面URLを指定することでログイン画面が表示されるかを確認する
@@ -156,21 +148,24 @@ class UsersControllerTest extends ControllerTestCase {
         
             $result = $this->testAction('/users/login', array('return' => 'contents' ));
             debug($result);
-            $this->assertTextContains($this->CheckKeywordOfLoginScreen(), $result);
+            $this->assertTextContains(VERIFICATION_KEYWORD_OF_LOGIN_SCREEN, $result);
 	}
         
         
         //テスト：
         //UserControllerへのアクセスは常にhttpsでアクセスされるかを確認する（http→httpsへリダイレクトされる）
 	public function test_Schema_check_whether_https(){
-            debug($_SERVER['HTTPS']);
-            $this->assertTextContains("on", $_SERVER['HTTPS']);
+            $result = $this->testAction('http://localhost/OZ/src/users/login', array('return' => 'result'));
+            debug($result);
+            $this->assertTextContains("https://", $result);
 	}
+
         
+//■ログイン機能
 //機能：ログイン済みであれば画面は表示されない
 //テスト検討中
 
-
+//■ログイン機能　バリエーションはテスト不要（Authの機能）、失敗する１ケースのみ
 //機能：未登録のログインIDを入力した場合、ログインできない
 //機能：誤ったパスワードを入力した場合、ログインできない
 //機能：ログインできない場合は理由を示したエラー表示を行う(ただし、ログインIDとパスワードのどちらが誤っているかは表示しない)
@@ -181,7 +176,7 @@ class UsersControllerTest extends ControllerTestCase {
         
             $result = $this->testAction('/users/login', array('return' => 'contents' ,'data' => $this->TestUserDataforLogin(1),'method' => 'post'));
             debug($result);
-            $this->assertTextContains($this->CheckKeywordOfLoginFailureScreen(), $result);
+            $this->assertTextContains(VERIFICATION_KEYWORD_OF_LOGIN_FAILURE_SCREEN, $result);
 	}
 //テスト2：
 //passwordを誤って入力した場合、ログインできない
@@ -189,7 +184,7 @@ class UsersControllerTest extends ControllerTestCase {
         
             $result = $this->testAction('/users/login', array('return' => 'contents' ,'data' => $this->TestUserDataforLogin(2),'method' => 'post'));
             debug($result);
-            $this->assertTextContains($this->CheckKeywordOfLoginFailureScreen(), $result);
+            $this->assertTextContains(VERIFICATION_KEYWORD_OF_LOGIN_FAILURE_SCREEN, $result);
 	}
 //テスト3：
 //usernameがemailではない場合、ログインできない
@@ -197,10 +192,11 @@ class UsersControllerTest extends ControllerTestCase {
         
             $result = $this->testAction('/users/login', array('return' => 'contents' ,'data' => $this->TestUserDataforLogin(3),'method' => 'post'));
             debug($result);
-            $this->assertTextContains($this->CheckKeywordOfLoginFailureScreen(), $result);
+            $this->assertTextContains(VERIFICATION_KEYWORD_OF_LOGIN_FAILURE_SCREEN, $result);
 	}
         
         
+//■ログイン機能
 
 //機能：ログインできた場合は、次のページに遷移する
 //テスト：検討中
