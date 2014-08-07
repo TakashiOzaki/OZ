@@ -16,55 +16,55 @@ class UsersController extends AppController {
  *
  * @var array
  */
-	public $components = array('Paginator', 'Session', 'Auth');
+	public $components = array('Paginator', 'Session', 'Auth','Security');
+
         
         public function beforeFilter() {
             parent::beforeFilter();
-            
-            if (empty($_SERVER['HTTPS'])) {
-                header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
-                exit;
-            }
-            
+        
+        // SSL接続のみを許容するための実装方法
+        // ★★スーパーグローバル変数$_SERVER['HTTPS']に直接アクセスしない。
+        //    if (empty($_SERVER['HTTPS'])) {
+        //       header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+        //        exit;
+        //    }
+        //  ★★セキュアな接続の設定はSecurityコンポーネントを使用する。
+            //usersControllerはhttpでの接続は許容せず、Securityコンポーネントを利用し、httpsへリダイレクトする
+            //セキュリティコンポーネントは、一般的にコントローラの beforeFilter() で使用します。 行いたいセキュリティの制限をここで定義すると、セキュリティコンポーネントは起動時にそれらの制限を有効にします。
+            //Securityコンポーネントを使用すると、SSL接続を強制することができる
+            //SSL接続でなかった場合に処理を停止した際に呼び出すコントローラコールバック関数を設定
+            $this->Security->blackHoleCallback = 'forceSSL';
+            //SSL接続だけで起動するアクションを指定（未指定なのですべて*のアクションが対象）
+            $this->Security->requireSecure();
+        
+            //Authコンポーネントの使用せずアクセス可能なメソッドを定義
             $this->Auth->allow('register','login');
+            //登録済みユーザを取得しuser変数にset
             $this->set('user',$this->Auth->user());
         }
-    
+
+        //Securityコンポーネント用コールバック関数　：http→httpsに変更したURLにリダイレクトする
+        public function forceSSL() {
+            return $this->redirect('https://' . env('SERVER_NAME') . $this->here);
+        }
+
+        
     //検討中　：　遷移元URLへリダイレクトする方法$_SERVER[HTTP_REFERER]
     //　　　　　　を利用する方法でよいか？この方法だとユーザ登録後は遷移不可？
         public function login() {
             if ($this->request->is('post')) {
                 if ($this->Auth->login()) {
-                    //redirect先は$_SERVER[HTTP_REFERER]を参照
-                    //$this->redirect($this->Auth->redirect());
                     
-                    // リファラーを分析して表示する。（分析方法未実装）
-                    if( $_SERVER[HTTP_REFERER] == NULL ){
-                            $this->redirect(array('controller' => 'users', 'action' => 'index'));
-                    }
-                    //検討中
-                    else if ($_SERVER[HTTP_REFERER] == "edit") {
-                            $this->redirect(array('controller' => 'users', 'action' => 'edit'));
-                    }
-                    else if( $_SERVER[HTTP_REFERER] == "display" ){
-                            $this->redirect(array('controller' => 'users', 'action' => 'index'));
-                    }                    
-                    else if( $_SERVER[HTTP_REFERER] == "exchange" ){
-                            $this->redirect(array('controller' => 'users', 'action' => 'exchange'));
-                    }
-                    else{
-                            $this->redirect(array('controller' => 'users', 'action' => 'login'));
-                    }
-
+                    return $this->redirect($this->Auth->redirectUrl());
                     
                 } else {
-                    $this->Session->setFlash(__('Invalid username or password, try again'));
+                    return $this->Session->setFlash(__('Invalid username or password, try again'));
                 }
             }
         }
 
         public function logout() {
-            $this->redirect($this->Auth->logout());
+            return $this->redirect($this->Auth->logout());
         }
 
     
