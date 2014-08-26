@@ -121,27 +121,31 @@ class UsersController extends AppController {
         }
 */
         public function register() {
-                if ($this->request->is('post')) {
-                        $this->User->create();
-                        if ($this->User->save($this->request->data)) {
-                                $this->Session->setFlash(__('The user has been saved.'));
-                                return $this->redirect(array('controller' => 'Card', 'action' => 'mcard'));
-                         } else {
-                                $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
-                         }
-                }  elseif ($this->request->is('get')){
+                //GETでのシーケンス(アカウント登録画面へ遷移)
+                if ($this->request->is('get')){
                         if($this->Auth->loggedIn()){
                             //ログイン済みなので、名刺作成画面へ遷移
+
+                            $this->Session->setFlash(__('The user has been saved.')); 
                             return $this->redirect(array('controller' => 'Card', 'action' => 'mcard'));                            
- //                           $this->Session->setFlash(__('The user has been saved.')); 
 //                            return $this->redirect(array('action' => 'index'));
 //                            return $this->redirect(array('controller' => 'Card', 'action' => 'Mcard'));
                          } else {
                              //未ログインなので、そのままアカウント登録画面へ遷移
- /*                               $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
- */
-                           }
-  
+ //                               $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+                         }
+                //POSTでのシーケンス(名刺作成画面へ遷移)
+                }elseif ($this->request->is('post')) {
+                        $this->User->create();  //http://book.cakephp.org/2.0/ja/models/saving-your-data.html
+                        if ($this->User->save($this->request->data)) {
+                                //save成功
+                                $this->Session->setFlash(__('The user has been saved.'));
+                                //login処理へ遷移
+                                return $this->redirect(array('action' => 'login'));
+                         } else {
+                                //save失敗
+                                $this->Session->setFlash(__('「save()」でエラー発生'));
+                         }
                 }
         }
 
