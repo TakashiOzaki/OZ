@@ -141,8 +141,17 @@ class UsersController extends AppController {
                                 //save成功
                                 $this->Session->setFlash(__('The user has been saved.'));
                                 //login処理へ遷移
-                                return $this->redirect(array('action' => 'login'));
-                         } else {
+//                                return $this->redirect(array('action' => 'login'));
+
+                                if ($this->Auth->login()) {
+
+                                    return $this->redirect($this->Auth->redirectUrl());
+
+                                } else {
+                                    return $this->Session->setFlash(__('Invalid username or password, try again'));
+                                }
+                                
+                        } else {
                                 //save失敗
                                 $this->Session->setFlash(__('「save()」でエラー発生'));
                          }
